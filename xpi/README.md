@@ -1,7 +1,9 @@
 # Signed add-on files (self-distribution only)
 
-Firefox looks for updates at `updates.json` (one directory up) because the
-add-on manifest declares:
+**Only the self-distributed build carries `update_url`.** The AMO validator
+rejects the key outright for Mozilla-hosted add-ons, so the zip uploaded to
+AMO never contains it. This directory is for the separate build made with
+`python3 build.py --self-distributed`, which declares:
 
     "update_url": "https://merry8989-uk.github.io/adskip/updates.json"
 
