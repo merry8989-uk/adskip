@@ -1,0 +1,659 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AdSkip — skip sponsored segments, block ads and trackers, hide words you hate</title>
+<meta name="description" content="AdSkip is a free browser extension for Chrome and Firefox: it skips sponsored segments, blocks ads and trackers across 23 curated lists, and hides words you never want to read. No account, no telemetry.">
+<meta name="theme-color" content="#0f1115">
+<link rel="canonical" href="https://merry8989-uk.github.io/adskip/">
+<style>
+  :root{
+    --bg:#0f1115; --panel:#151922; --panel-2:#1b2029; --line:#262b36;
+    --text:#e8eaf0; --muted:#9aa1b2; --accent:#4c8dff; --accent-2:#7ee787;
+    --warn:#ffd400; --danger:#ff6b6b; --radius:14px; --max:1080px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif;
+    -webkit-font-smoothing:antialiased}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  code,kbd{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.9em}
+  kbd{background:var(--panel-2);border:1px solid var(--line);border-bottom-width:2px;
+    border-radius:6px;padding:1px 6px;color:#cfe3ff;white-space:nowrap}
+  code{background:rgba(76,141,255,.1);color:#a5d6ff;border-radius:5px;padding:1px 5px}
+  .wrap{max-width:var(--max);margin:0 auto;padding:0 22px}
+
+  /* ---------- nav ---------- */
+  header.nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(12px);
+    background:rgba(15,17,21,.82);border-bottom:1px solid var(--line)}
+  .nav-in{display:flex;align-items:center;gap:18px;height:62px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.2px;color:var(--text)}
+  .brand .dot{width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,#4c8dff,#7ee787);
+    display:grid;place-items:center;font-size:14px;color:#0f1115;font-weight:800}
+  .nav-links{display:flex;gap:18px;margin-left:auto;font-size:14.5px;flex-wrap:wrap}
+  .nav-links a{color:var(--muted)}
+  .nav-links a:hover{color:var(--text);text-decoration:none}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:10px;
+    font-weight:600;font-size:14.5px;border:1px solid var(--line);color:var(--text);background:var(--panel)}
+  .btn:hover{text-decoration:none;border-color:var(--accent)}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  .btn.primary:hover{filter:brightness(1.08)}
+  .btn.small{padding:7px 12px;font-size:13.5px}
+
+  @media (max-width:760px){
+    /* the anchor list would wrap under the fixed bar on a phone */
+    .nav-links{display:none}
+    .nav-in{height:56px}
+    .hero{padding:52px 0 32px}
+    section{padding:44px 0}
+  }
+
+  /* ---------- hero ---------- */
+  .hero{padding:72px 0 40px;border-bottom:1px solid var(--line);
+    background:radial-gradient(900px 380px at 15% -10%,rgba(76,141,255,.16),transparent 70%),
+               radial-gradient(700px 320px at 90% 0%,rgba(126,231,135,.09),transparent 65%)}
+  .hero h1{font-size:clamp(30px,5vw,46px);line-height:1.12;margin:0 0 16px;letter-spacing:-.02em}
+  .hero p.lead{font-size:clamp(16px,2.2vw,19px);color:#c2c8d4;max-width:62ch;margin:0 0 26px}
+  .badges{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 26px;padding:0;list-style:none}
+  .badges li{font-size:12.5px;color:#b9c1cf;background:var(--panel);border:1px solid var(--line);
+    border-radius:999px;padding:5px 11px}
+  .cta{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .cta small{color:var(--muted);font-size:13px}
+
+  /* ---------- sections ---------- */
+  section{padding:58px 0;border-bottom:1px solid var(--line)}
+  section:last-of-type{border-bottom:0}
+  h2.sec{font-size:clamp(22px,3.4vw,30px);margin:0 0 8px;letter-spacing:-.01em}
+  p.sec-sub{color:var(--muted);margin:0 0 30px;max-width:70ch}
+  h3{font-size:18px;margin:0 0 6px}
+  .grid{display:grid;gap:16px}
+  .g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+  .g3{grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+  .card p{margin:0;color:#c2c8d4;font-size:14.6px}
+  .card p + p{margin-top:10px}
+  .card .tag{display:inline-block;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;
+    color:#7cb0ff;background:rgba(76,141,255,.12);border-radius:6px;padding:3px 7px;margin-bottom:10px}
+  .card ul{margin:10px 0 0;padding-left:18px;color:#c2c8d4;font-size:14.6px}
+  .card li{margin:5px 0}
+  .icon{width:34px;height:34px;border-radius:9px;background:rgba(76,141,255,.14);
+    display:grid;place-items:center;margin-bottom:12px;color:#7cb0ff}
+  .icon svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.9;
+    stroke-linecap:round;stroke-linejoin:round}
+
+  /* ---------- steps ---------- */
+  ol.steps{counter-reset:s;list-style:none;margin:0;padding:0;display:grid;gap:14px}
+  ol.steps li{counter-increment:s;position:relative;padding:16px 18px 16px 58px;
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);font-size:14.8px}
+  ol.steps li::before{content:counter(s);position:absolute;left:16px;top:15px;width:26px;height:26px;
+    border-radius:50%;background:rgba(76,141,255,.16);color:#7cb0ff;font-weight:700;font-size:13px;
+    display:grid;place-items:center}
+  ol.steps li b{color:#fff}
+  .guide{margin-bottom:34px}
+  .guide h3{display:flex;gap:10px;align-items:center;margin-bottom:10px}
+  .guide h3 span.n{font-size:12px;color:#7cb0ff;border:1px solid rgba(76,141,255,.35);
+    border-radius:6px;padding:2px 7px;font-weight:600}
+
+  /* ---------- table ---------- */
+  .tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius)}
+  table{border-collapse:collapse;width:100%;font-size:14.4px;min-width:520px}
+  th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:var(--panel-2);font-size:12.5px;text-transform:uppercase;letter-spacing:.06em;color:#b9c1cf}
+  tr:last-child td{border-bottom:0}
+  td.num{color:#7cb0ff;font-variant-numeric:tabular-nums;white-space:nowrap}
+
+  /* ---------- faq ---------- */
+  details{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:0 0 10px}
+  details summary{cursor:pointer;font-weight:600;font-size:15px}
+  details p{margin:10px 0 0;color:#c2c8d4;font-size:14.6px}
+  details[open]{border-color:#33405a}
+
+  /* ---------- about / contact ---------- */
+  .about{display:grid;gap:26px;grid-template-columns:1.35fr 1fr}
+  @media (max-width:820px){.about{grid-template-columns:1fr}}
+  .about h3{margin-top:0}
+  .about p{color:#c2c8d4}
+  .contact-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+  .contact-card h3{font-size:16px;margin-bottom:12px}
+  .linkrow{display:flex;align-items:center;gap:10px;padding:11px 0;border-top:1px solid var(--line);font-size:14.6px}
+  .linkrow:first-of-type{border-top:0}
+  .linkrow .lbl{color:var(--muted);min-width:74px;font-size:13px}
+  .linkrow a,.linkrow span.val{color:var(--text);word-break:break-word}
+  footer{padding:34px 0 60px;color:var(--muted);font-size:13.4px}
+  footer .frow{display:flex;gap:18px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+  footer a{color:#b9c1cf}
+  .note{background:rgba(255,212,0,.07);border:1px solid rgba(255,212,0,.28);border-radius:12px;
+    padding:14px 16px;font-size:14.2px;color:#efe6bd;margin:22px 0 0}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="#top"><span class="dot">A</span> AdSkip</a>
+    <nav class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#blocklists">Blocklists</a>
+      <a href="#guides">Guides</a>
+      <a href="#faq">FAQ</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <a class="btn primary small" href="#install">Install</a>
+  </div>
+</header>
+
+<div id="top"></div>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>Less noise on the web.<br>Ads, trackers, sponsor reads — and the words you'd rather not read.</h1>
+    <p class="lead">
+      AdSkip is a free browser extension for Chrome and Firefox. It skips sponsored segments inside videos,
+      blocks advertising and tracking requests across 23 curated blocklists, and can hide words and phrases
+      you never want to see again — with a colour bar, a gap, or by removing them completely.
+    </p>
+    <ul class="badges">
+      <li>No account</li>
+      <li>No telemetry</li>
+      <li>Nothing downloaded while you browse</li>
+      <li>Works on any site</li>
+      <li>Free</li>
+    </ul>
+    <div class="cta">
+      <a class="btn primary" href="#install">Get started</a>
+      <a class="btn" href="#features">See every feature</a>
+      <small>Version 1.5.2 · Firefox 140+ · Chrome 101+</small>
+    </div>
+  </div>
+</div>
+
+<!-- ============================ FEATURES ============================ -->
+<section id="features">
+  <div class="wrap">
+    <h2 class="sec">What AdSkip does</h2>
+    <p class="sec-sub">
+      Four jobs, each one switchable on its own. Nothing here needs an account, and every decision is yours —
+      including the colour of the bar that hides a word.
+    </p>
+
+    <div class="grid g2">
+
+      <div class="card">
+        <div class="icon"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4z"/><path d="M9 9l6 6M15 9l-6 6"/></svg></div>
+        <span class="tag">Sponsored segments</span>
+        <h3>Skip sponsor reads inside videos</h3>
+        <p>
+          AdSkip reads the community-run SponsorBlock dataset and jumps past the parts of a video that are really
+          an advert: paid promotions, self-promos, "like and subscribe" reminders, intros, outros, recaps, filler
+          and non-music sections inside music videos.
+        </p>
+        <p>
+          You choose which categories are skipped and which are only muted. The lookup is private by default:
+          the request carries only the first four characters of a SHA-256 hash of the video id, which is not
+          enough to identify what you are watching.
+        </p>
+        <ul>
+          <li>Mark your own segments in the on-page editor and submit them</li>
+          <li>Submitted segments apply to your player immediately, before anyone approves them</li>
+          <li>You keep a private, random user id for attribution — no account, no email</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="icon"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6z"/><path d="M9 12l2 2 4-4"/></svg></div>
+        <span class="tag">Ads &amp; trackers</span>
+        <h3>Block advertising and tracking requests</h3>
+        <p>
+          Blocking happens in the browser's own network layer (<code>declarativeNetRequest</code>), not by injecting
+          scripts into pages. That means no code from a filter list ever runs in your browser.
+        </p>
+        <p>
+          23 lists in eight categories, about 20,000 enforced rules plus 25,000+ element-hiding selectors — all
+          inside the package. Nothing is fetched while you browse, so blocking also works offline.
+        </p>
+        <ul>
+          <li>Ads &amp; popups, tracking &amp; privacy, malware &amp; scams, annoyances</li>
+          <li>Parental control, per-company packs, local-network guard, core &amp; safety</li>
+          <li>Four one-click presets: Light, Balanced, Strict, Family</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="icon"><svg viewBox="0 0 24 24"><path d="M5 4h14v12H5z"/><path d="M9 20h6M12 16v4"/><path d="M10 9l4 2-4 2z"/></svg></div>
+        <span class="tag">In-player ads</span>
+        <h3>Handle ads inside any HTML5 player</h3>
+        <p>
+          On players that show a "Skip ad" button, AdSkip clicks it the moment it appears. For ads you cannot
+          skip, it mutes the audio and fast-forwards until the ad is over — then restores your speed and volume
+          exactly as they were.
+        </p>
+        <p>
+          The engine only acts while an ad signal is present, so normal playback is never touched. You can turn
+          the whole thing off, or keep the mute but drop the fast-forward.
+        </p>
+      </div>
+
+      <div class="card">
+        <div class="icon"><svg viewBox="0 0 24 24"><path d="M4 20l6-6"/><path d="M13 4l7 7-4 4-7-7z"/><path d="M6 18h2v2H6z"/></svg></div>
+        <span class="tag">Words</span>
+        <h3>Hide words you never want to read</h3>
+        <p>
+          Add your own words and phrases and AdSkip hides them on every site — feeds, comments, articles,
+          anywhere text appears. This is not a profanity list you have to accept: it is your list, your rules.
+        </p>
+        <p>Three display modes, chosen by you:</p>
+        <ul>
+          <li><b>Cover it</b> — a coloured bar over the word. The page never moves, nothing reflows.</li>
+          <li><b>Leave a gap</b> — the word becomes invisible but keeps its space.</li>
+          <li><b>Remove it</b> — the word is taken out and the text closes up as if it was never written.</li>
+        </ul>
+        <p>
+          Colour is red, black, yellow or any value you pick. Matching is whole-word, so a short word never fires
+          inside a longer one, and it works with Hindi and other scripts. Inputs, text areas, code blocks and
+          editable regions are skipped, so forms and editors are never damaged.
+        </p>
+      </div>
+
+      <div class="card">
+        <div class="icon"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h10M4 17h7"/><path d="M17 12l3 3-3 3"/></svg></div>
+        <span class="tag">Control</span>
+        <h3>Block anything the lists miss</h3>
+        <p>
+          Hover and click any element to hide it — on that site or everywhere. Or drag a box with the area tool to
+          hide everything inside it, or paint a mask over exactly that region. Both apply instantly and both can be
+          removed later from settings.
+        </p>
+        <p>
+          For anything more precise there is a "my filters" box that takes familiar uBlock/Adblock syntax:
+          <code>||ads.example.com^</code>, <code>example.com##.promo</code>, <code>##.newsletter-popup</code>.
+        </p>
+      </div>
+
+      <div class="card">
+        <div class="icon"><svg viewBox="0 0 24 24"><path d="M12 3v18M3 12h18"/><circle cx="12" cy="12" r="9"/></svg></div>
+        <span class="tag">Per site</span>
+        <h3>Two switches for every site</h3>
+        <p>
+          <b>Paused</b> means AdSkip does nothing on that site at all. <b>Words off</b> keeps ad blocking but leaves
+          your word list alone there — useful on a site where a common word of yours is part of the layout.
+        </p>
+        <p>
+          Both lists live in Settings → Sites, and both are reachable in one keystroke or from the right-click menu
+          while you are on the page.
+        </p>
+      </div>
+
+    </div>
+
+    <div class="grid g3" style="margin-top:16px">
+      <div class="card">
+        <span class="tag">Never breaks a site</span>
+        <h3>Sites are never blocked</h3>
+        <p>
+          Only requests <em>inside</em> a page are blocked — never the page itself. AdSkip also refuses to hide the
+          document, and it honours the "leave this site alone" exceptions published by the list authors, plus a
+          built-in allow list for search engines and code CDNs.
+        </p>
+      </div>
+      <div class="card">
+        <span class="tag">Diagnostics</span>
+        <h3>A log you can actually read</h3>
+        <p>
+          When something misbehaves, AdSkip can tell you why: which ruleset was active, whether an ad was detected,
+          how long a skip took, what failed. At most 400 events, stored on your device, exportable as JSON and
+          clearable at any time.
+        </p>
+      </div>
+      <div class="card">
+        <span class="tag">Privacy</span>
+        <h3>No account, no telemetry</h3>
+        <p>
+          There is no analytics, no advertising, no tracking and no server that receives your data. Hostnames can be
+          left out of the log entirely. The only network call AdSkip makes is to the community SponsorBlock API.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ BLOCKLISTS ============================ -->
+<section id="blocklists">
+  <div class="wrap">
+    <h2 class="sec">The blocklists, category by category</h2>
+    <p class="sec-sub">
+      Every list is bundled and individually switchable. Rule counts are what is actually enforced after each list
+      is capped to fit the browser's 30,000-rule allowance — not what the upstream list contains.
+    </p>
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr><th>Category</th><th>What it stops</th><th>Lists</th><th class="num">Rules</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Ads &amp; popups</td><td>Banner, video and interstitial ads, ad networks, popup scripts</td><td>AdGuard Base, uBlock filters, AdAway, 1Hosts Lite</td><td class="num">7,314</td></tr>
+          <tr><td>Tracking &amp; privacy</td><td>Analytics, fingerprinting, session replay, cross-site trackers</td><td>AdGuard Tracking Protection, uBlock privacy</td><td class="num">2,864</td></tr>
+          <tr><td>Malware, phishing &amp; scams</td><td>Malware hosts, phishing kits, fake shops, crypto scams, gambling spam</td><td>uBlock badware, NextDNS recommended, scam hosts</td><td class="num">5,753</td></tr>
+          <tr><td>Annoyances</td><td>Cookie walls, newsletter modals, chat bubbles, push-prompt nags</td><td>uBlock quick fixes</td><td class="num">59</td></tr>
+          <tr><td>Parental control</td><td>Adult content, social and short-video feeds — off by default</td><td>StevenBlack adult list, curated social pack</td><td class="num">2,529</td></tr>
+          <tr><td>Companies &amp; apps</td><td>One platform at a time: Meta, Google ads, TikTok, Amazon ads, X, Microsoft, LinkedIn/Snap — off by default</td><td>7 curated packs</td><td class="num">83</td></tr>
+          <tr><td>Local network &amp; file access</td><td>Pages reaching localhost, router gateways, the cloud metadata endpoint, local device names</td><td>Curated</td><td class="num">27</td></tr>
+          <tr><td>Core &amp; safety</td><td>Hand-checked basics, search/CDN allow list, unbreak rules</td><td>AdSkip core, safety net, merged exceptions</td><td class="num">1,738</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note">
+      <b>Why some numbers look small.</b> A cap keeps the total under the browser's guaranteed limit, and only the
+      first N rules of a very large list fit. The parental and company categories are off by default because
+      blocking a whole platform can break sign-in buttons — turn them on when you want that trade.
+    </div>
+  </div>
+</section>
+
+<!-- ============================ GUIDES ============================ -->
+<section id="guides">
+  <div class="wrap">
+    <h2 class="sec">Guides</h2>
+    <p class="sec-sub">Short, practical, in the order most people need them.</p>
+
+    <div class="guide" id="install">
+      <h3><span class="n">01</span> Install on Chrome, Edge, Brave or Opera</h3>
+      <ol class="steps">
+        <li>Download the extension package and unzip it into a folder you will keep.</li>
+        <li>Open <code>chrome://extensions</code> and turn on <b>Developer mode</b> (top right).</li>
+        <li>Click <b>Load unpacked</b> and select the unzipped folder.</li>
+        <li>Pin AdSkip to the toolbar from the puzzle-piece menu so the pause switch is one click away.</li>
+      </ol>
+    </div>
+
+    <div class="guide">
+      <h3><span class="n">02</span> Install on Firefox</h3>
+      <ol class="steps">
+        <li><b>Temporary:</b> open <code>about:debugging#/runtime/this-firefox</code>, click <b>Load Temporary Add-on</b> and pick the <code>manifest.json</code> inside the unzipped folder. Temporary add-ons disappear when Firefox closes.</li>
+        <li><b>Permanent:</b> install from addons.mozilla.org once the listing is live, or sign the package with <code>web-ext sign</code> for self-distribution.</li>
+        <li>Firefox 140 or newer is required, because the add-on declares the browsing-activity data collection that Firefox shows you at install time.</li>
+      </ol>
+    </div>
+
+    <div class="guide">
+      <h3><span class="n">03</span> First five minutes: pick a preset</h3>
+      <p class="sec-sub" style="margin-bottom:14px">
+        Open Settings → Blocklists. Start with <b>Balanced</b> unless you know you want more or less.
+      </p>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Preset</th><th>What it turns on</th><th>Choose it when</th></tr></thead>
+          <tbody>
+            <tr><td><b>Light</b></td><td>Core list, safety net, unbreak rules, AdGuard Base</td><td>A site must never break, and ads are only mildly annoying</td></tr>
+            <tr><td><b>Balanced</b></td><td>Light + uBlock filters, AdGuard tracking, uBlock privacy, badware, NextDNS hosts</td><td>Default choice for almost everyone</td></tr>
+            <tr><td><b>Strict</b></td><td>Balanced + AdAway, 1Hosts Lite, scam hosts, annoyances</td><td>You want the most blocked and accept the occasional breakage</td></tr>
+            <tr><td><b>Family</b></td><td>Balanced + adult content, social feeds, local-network guard</td><td>A shared device or a child's browser</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="guide">
+      <h3><span class="n">04</span> Hide a word — two ways</h3>
+      <ol class="steps">
+        <li><b>Fastest:</b> select the word on any page and press <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>W</kbd>. A bar appears at the bottom; click <b>Block it</b>. It is hidden everywhere from that moment.</li>
+        <li><b>Bulk:</b> Settings → Words, paste one word or phrase per line, then pick the mode — cover, gap or remove — and the colour.</li>
+        <li>If a site needs the words back, add it under Settings → Sites with the action <b>Words off only</b>.</li>
+      </ol>
+      <div class="note">
+        Whole-word matching is on by default: a blocked word will not fire inside a longer word. Phrases work too —
+        write them with normal spaces.
+      </div>
+    </div>
+
+    <div class="guide">
+      <h3><span class="n">05</span> Remove an element that the lists miss</h3>
+      <ol class="steps">
+        <li>Press <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd> (or right-click → <b>AdSkip: block an element</b>).</li>
+        <li>Hover the page: the element under the cursor is outlined. Click to hide it.</li>
+        <li>Choose <b>this site</b> or <b>all sites</b>. The rule is saved instantly and can be deleted from Settings later.</li>
+        <li>For a region instead of a single element, press <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd> and drag a box.</li>
+      </ol>
+    </div>
+
+    <div class="guide">
+      <h3><span class="n">06</span> A site looks broken? Pause it, don't uninstall</h3>
+      <ol class="steps">
+        <li>Press <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>, or right-click → <b>AdSkip: pause on this site</b>.</li>
+        <li>The site is added to <b>Paused sites</b> and AdSkip does nothing there until you remove it.</li>
+        <li>If only your word list is the problem, use <b>Words off only</b> from Settings → Sites instead — ads stay blocked.</li>
+      </ol>
+    </div>
+
+    <div class="guide">
+      <h3><span class="n">07</span> Write your own filter rules</h3>
+      <p class="sec-sub" style="margin-bottom:14px">Settings → Blocklists → My filters. One rule per line.</p>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Rule</th><th>What it does</th></tr></thead>
+          <tbody>
+            <tr><td><code>||ads.example.com^</code></td><td>Blocks requests to that host</td></tr>
+            <tr><td><code>||tracker.example^$script,third-party</code></td><td>Blocks only third-party scripts from that host</td></tr>
+            <tr><td><code>example.com##.promo-box</code></td><td>Hides that element on that site only</td></tr>
+            <tr><td><code>##.newsletter-popup</code></td><td>Hides that element on every site</td></tr>
+            <tr><td><code>@@||cdn.example.com^</code></td><td>Exception: always allow that host</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="guide">
+      <h3><span class="n">08</span> Report a bug so it can actually be fixed</h3>
+      <ol class="steps">
+        <li>Open Settings → Diagnostics and set the level to <b>debug</b>.</li>
+        <li>Reproduce the problem on the page once.</li>
+        <li>Come back and press <b>Refresh</b>, then <b>Export JSON</b>.</li>
+        <li>Send that file to <a href="mailto:br19shc39@gmail.com">br19shc39@gmail.com</a> or a DM on <a href="https://instagram.com/osintgram_io" target="_blank" rel="noopener">@osintgram_io</a>, with the site name and what you expected.</li>
+      </ol>
+      <div class="note">
+        The export contains hostnames and technical events only — no page content, no URLs with paths, no cookies,
+        no tokens. You can also turn hostname logging off before exporting.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ SHORTCUTS ============================ -->
+<section id="shortcuts">
+  <div class="wrap">
+    <h2 class="sec">Keyboard shortcuts</h2>
+    <p class="sec-sub">All four are editable at <code>chrome://extensions/shortcuts</code> (or <code>about:addons</code> → gear → Manage Extension Shortcuts on Firefox).</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Shortcut</th><th>Action</th></tr></thead>
+        <tbody>
+          <tr><td><kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd></td><td>Block an element on this page</td></tr>
+          <tr><td><kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd></td><td>Block an area on this page</td></tr>
+          <tr><td><kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>W</kbd></td><td>Hide the selected text everywhere</td></tr>
+          <tr><td><kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd></td><td>Pause AdSkip on this site</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ FAQ ============================ -->
+<section id="faq">
+  <div class="wrap">
+    <h2 class="sec">Questions people actually ask</h2>
+    <p class="sec-sub">&nbsp;</p>
+
+    <details>
+      <summary>Does it block every ad?</summary>
+      <p>
+        No, and no extension does. Ads served from the same domain as the page, baked into a video stream, or
+        rendered inside a first-party player can slip through — that is what the element picker and the word filter
+        are for. What AdSkip does well is the request layer: ad networks, trackers, malware hosts and annoyances.
+      </p>
+    </details>
+
+    <details>
+      <summary>Will it break websites?</summary>
+      <p>
+        Less than a bare filter list would. AdSkip never blocks the page itself, only requests inside it; it never
+        hides the document; it ships the list authors' own "unbreak" exceptions; and it carries an allow list for
+        search engines and code CDNs. If something still breaks, the pause switch for that site takes one keystroke.
+      </p>
+    </details>
+
+    <details>
+      <summary>What data does it collect?</summary>
+      <p>
+        None that leaves your device, except the SponsorBlock lookup described above. There is no analytics, no
+        account and no telemetry endpoint. The optional diagnostics log stays in your browser and is only exported
+        if you press the button. Full detail: <a href="https://merry8989-uk.github.io/adskip-privacy/" target="_blank" rel="noopener">the privacy policy</a>.
+      </p>
+    </details>
+
+    <details>
+      <summary>Why does the word filter not touch text boxes?</summary>
+      <p>
+        Because hiding text inside a form field would corrupt what you are typing. AdSkip skips inputs, text areas,
+        code blocks and editable regions on purpose. It also skips scripts and styles, so nothing can break the page's
+        own code.
+      </p>
+    </details>
+
+    <details>
+      <summary>Do the filter lists get updated automatically?</summary>
+      <p>
+        No — lists are bundled at build time and shipped inside the extension, which is why blocking works offline and
+        why no request is made while you browse. Updated lists arrive with a new version of AdSkip.
+      </p>
+    </details>
+
+    <details>
+      <summary>Can I use it on Firefox for Android?</summary>
+      <p>
+        Yes, the add-on supports Android from Firefox 142 onwards. The settings page is a normal web page, so it works
+        in a mobile tab too.
+      </p>
+    </details>
+
+    <details>
+      <summary>Is my word list uploaded anywhere?</summary>
+      <p>
+        Never. It is stored in your browser's extension storage like the rest of your settings, and it is included in
+        the settings export only if you export your settings yourself.
+      </p>
+    </details>
+
+    <details>
+      <summary>Something is wrong with a specific site. What helps most?</summary>
+      <p>
+        An exported diagnostics file plus the site's name. That tells exactly which ruleset was active, whether the
+        element was detected and what failed — far more useful than a description. See
+        <a href="#guides">guide 08</a>.
+      </p>
+    </details>
+  </div>
+</section>
+
+<!-- ============================ ABOUT ============================ -->
+<section id="about">
+  <div class="wrap">
+    <h2 class="sec">About AdSkip</h2>
+    <p class="sec-sub">Built by one person, for the web they want to read.</p>
+
+    <div class="about">
+      <div>
+        <h3>Why it exists</h3>
+        <p>
+          Most blockers either do too little or break things. AdSkip started as a small tool to skip sponsor reads in
+          videos, and grew into something more deliberate: block the advertising and tracking layer, never block the
+          site, and give the person using it real control — including over the words they have to look at.
+        </p>
+        <p>
+          Everything runs locally. There is no account, no subscription, no "premium tier", no analytics and no server
+          holding your data. The filter lists ship inside the package, so the extension works the same offline as it
+          does online, and nobody can tell which sites you visit.
+        </p>
+        <p>
+          The word filter is the part people ask about most. It exists because "I don't want to read this" is a
+          legitimate preference — on a feed, in a comment section, in a group chat screenshot. You decide whether a
+          match becomes a coloured bar, an empty gap, or disappears completely.
+        </p>
+        <h3 style="margin-top:26px">How it is built</h3>
+        <p>
+          Plain, unminified JavaScript and the browser's own blocking engine — no bundler, no remote code, no
+          obfuscation. Blocklists are converted to declarative rules at build time and validated on every build: no
+          rule may match every URL, no rule may block the page itself, and the total must stay under the browser's
+          static-rule allowance. 177 automated checks guard the parser, the word filter, diagnostics and packaging.
+        </p>
+      </div>
+
+      <div class="contact-card">
+        <h3>Contact &amp; links</h3>
+        <div class="linkrow">
+          <span class="lbl">Instagram</span>
+          <a href="https://instagram.com/osintgram_io" target="_blank" rel="noopener">@osintgram_io</a>
+        </div>
+        <div class="linkrow">
+          <span class="lbl">Email</span>
+          <a href="mailto:br19shc39@gmail.com">br19shc39@gmail.com</a>
+        </div>
+        <div class="linkrow">
+          <span class="lbl">Privacy</span>
+          <a href="https://merry8989-uk.github.io/adskip-privacy/" target="_blank" rel="noopener">Privacy policy</a>
+        </div>
+        <div class="linkrow">
+          <span class="lbl">Version</span>
+          <span class="val">1.5.2</span>
+        </div>
+        <p style="color:var(--muted);font-size:13.4px;margin:14px 0 0">
+          Fastest reply is a DM on Instagram. For bugs, attach the exported diagnostics file — it saves a round trip.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ CONTACT ============================ -->
+<section id="contact">
+  <div class="wrap">
+    <h2 class="sec">Get in touch</h2>
+    <p class="sec-sub">Feature requests, a site that breaks, a word list you think should ship as a preset — all welcome.</p>
+    <div class="grid g2">
+      <div class="card">
+        <h3>Instagram — @osintgram_io</h3>
+        <p>Best for quick questions, screenshots and feature ideas. DMs are open.</p>
+        <p><a class="btn small" href="https://instagram.com/osintgram_io" target="_blank" rel="noopener">Open Instagram</a></p>
+      </div>
+      <div class="card">
+        <h3>Email — br19shc39@gmail.com</h3>
+        <p>Best for bug reports with a diagnostics file attached, and anything longer than a DM.</p>
+        <p><a class="btn small" href="mailto:br19shc39@gmail.com">Send an email</a></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap frow">
+    <div>
+      <b style="color:var(--text)">AdSkip</b> · version 1.5.2 · free, no account, no telemetry
+    </div>
+    <div style="display:flex;gap:16px;flex-wrap:wrap">
+      <a href="https://merry8989-uk.github.io/adskip-privacy/" target="_blank" rel="noopener">Privacy policy</a>
+      <a href="https://instagram.com/osintgram_io" target="_blank" rel="noopener">Instagram</a>
+      <a href="mailto:br19shc39@gmail.com">Email</a>
+      <a href="#top">Back to top</a>
+    </div>
+  </div>
+  <div class="wrap" style="margin-top:14px">
+    AdSkip is an independent project. It is not affiliated with, endorsed by, or sponsored by Google, YouTube,
+    Mozilla, AdGuard, uBlock Origin, NextDNS or the SponsorBlock project. Product names are used only to describe
+    compatibility.
+  </div>
+</footer>
+
+</body>
+</html>
