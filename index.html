@@ -164,7 +164,8 @@
       <li>Free</li>
     </ul>
     <div class="cta">
-      <a class="btn primary" href="#install">Get started</a>
+      <a class="btn primary" href="https://addons.mozilla.org/en-US/firefox/addon/adskip-sponsor-ad-skipper/" target="_blank" rel="noopener">Add to Firefox</a>
+      <a class="btn" href="#install">Install on Chrome</a>
       <a class="btn" href="#features">See every feature</a>
       <small>Version 1.5.2 · Firefox 140+ · Chrome 101+</small>
     </div>
@@ -360,7 +361,24 @@
     <p class="sec-sub">Short, practical, in the order most people need them.</p>
 
     <div class="guide" id="install">
-      <h3><span class="n">01</span> Install on Chrome, Edge, Brave or Opera</h3>
+      <h3><span class="n">01</span> Install on Firefox — one click</h3>
+      <div class="card" style="margin-bottom:14px">
+        <h3 style="margin-bottom:6px">AdSkip on addons.mozilla.org</h3>
+        <p>The signed add-on is published on Mozilla's official store, so it installs like any other Firefox add-on and updates itself.</p>
+        <p style="margin-top:14px">
+          <a class="btn primary" href="https://addons.mozilla.org/en-US/firefox/addon/adskip-sponsor-ad-skipper/" target="_blank" rel="noopener">Add to Firefox</a>
+          <a class="btn small" style="margin-left:8px" href="https://addons.mozilla.org/en-US/firefox/addon/adskip-sponsor-ad-skipper/" target="_blank" rel="noopener">Read the listing</a>
+        </p>
+        <p style="color:var(--muted);font-size:13.4px;margin-top:12px">
+          Requires Firefox 140 or newer, including Firefox for Android 142+. The install prompt shows the
+          browsing-activity data declaration — that is the SponsorBlock lookup described above.
+        </p>
+      </div>
+      <p class="sec-sub" style="margin-bottom:14px">Prefer the manual route, or on Chrome? Both are below.</p>
+    </div>
+
+    <div class="guide">
+      <h3><span class="n">02</span> Install on Chrome, Edge, Brave or Opera</h3>
       <ol class="steps">
         <li>Download the extension package and unzip it into a folder you will keep.</li>
         <li>Open <code>chrome://extensions</code> and turn on <b>Developer mode</b> (top right).</li>
@@ -370,16 +388,16 @@
     </div>
 
     <div class="guide">
-      <h3><span class="n">02</span> Install on Firefox</h3>
+      <h3><span class="n">03</span> Install on Firefox manually</h3>
       <ol class="steps">
         <li><b>Temporary:</b> open <code>about:debugging#/runtime/this-firefox</code>, click <b>Load Temporary Add-on</b> and pick the <code>manifest.json</code> inside the unzipped folder. Temporary add-ons disappear when Firefox closes.</li>
-        <li><b>Permanent:</b> install from addons.mozilla.org once the listing is live, or sign the package with <code>web-ext sign</code> for self-distribution.</li>
+        <li><b>Permanent:</b> <a href="https://addons.mozilla.org/en-US/firefox/addon/adskip-sponsor-ad-skipper/" target="_blank" rel="noopener">install from addons.mozilla.org</a> — no temporary step needed. For self-distribution, sign the package with <code>web-ext sign</code>.</li>
         <li>Firefox 140 or newer is required, because the add-on declares the browsing-activity data collection that Firefox shows you at install time.</li>
       </ol>
     </div>
 
     <div class="guide">
-      <h3><span class="n">03</span> First five minutes: pick a preset</h3>
+      <h3><span class="n">04</span> First five minutes: pick a preset</h3>
       <p class="sec-sub" style="margin-bottom:14px">
         Open Settings → Blocklists. Start with <b>Balanced</b> unless you know you want more or less.
       </p>
@@ -397,7 +415,7 @@
     </div>
 
     <div class="guide">
-      <h3><span class="n">04</span> Hide a word — two ways</h3>
+      <h3><span class="n">05</span> Hide a word — two ways</h3>
       <ol class="steps">
         <li><b>Fastest:</b> select the word on any page and press <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>W</kbd>. A bar appears at the bottom; click <b>Block it</b>. It is hidden everywhere from that moment.</li>
         <li><b>Bulk:</b> Settings → Words, paste one word or phrase per line, then pick the mode — cover, gap or remove — and the colour.</li>
@@ -410,7 +428,7 @@
     </div>
 
     <div class="guide">
-      <h3><span class="n">05</span> Remove an element that the lists miss</h3>
+      <h3><span class="n">06</span> Remove an element that the lists miss</h3>
       <ol class="steps">
         <li>Press <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd> (or right-click → <b>AdSkip: block an element</b>).</li>
         <li>Hover the page: the element under the cursor is outlined. Click to hide it.</li>
@@ -420,7 +438,7 @@
     </div>
 
     <div class="guide">
-      <h3><span class="n">06</span> A site looks broken? Pause it, don't uninstall</h3>
+      <h3><span class="n">07</span> A site looks broken? Pause it, don't uninstall</h3>
       <ol class="steps">
         <li>Press <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>, or right-click → <b>AdSkip: pause on this site</b>.</li>
         <li>The site is added to <b>Paused sites</b> and AdSkip does nothing there until you remove it.</li>
@@ -429,7 +447,7 @@
     </div>
 
     <div class="guide">
-      <h3><span class="n">07</span> Write your own filter rules</h3>
+      <h3><span class="n">08</span> Write your own filter rules</h3>
       <p class="sec-sub" style="margin-bottom:14px">Settings → Blocklists → My filters. One rule per line.</p>
       <div class="tablewrap">
         <table>
@@ -446,7 +464,7 @@
     </div>
 
     <div class="guide">
-      <h3><span class="n">08</span> Report a bug so it can actually be fixed</h3>
+      <h3><span class="n">09</span> Report a bug so it can actually be fixed</h3>
       <ol class="steps">
         <li>Open Settings → Diagnostics and set the level to <b>debug</b>.</li>
         <li>Reproduce the problem on the page once.</li>
@@ -610,6 +628,10 @@
           <a href="https://merry8989-uk.github.io/adskip-privacy/" title="AdSkip privacy policy">Privacy policy</a>
         </div>
         <div class="linkrow">
+          <span class="lbl">Firefox</span>
+          <a href="https://addons.mozilla.org/en-US/firefox/addon/adskip-sponsor-ad-skipper/" target="_blank" rel="noopener">addons.mozilla.org</a>
+        </div>
+        <div class="linkrow">
           <span class="lbl">Version</span>
           <span class="val">1.5.2</span>
         </div>
@@ -649,6 +671,7 @@
     <div style="display:flex;gap:16px;flex-wrap:wrap">
       <a href="https://merry8989-uk.github.io/adskip-privacy/" title="AdSkip privacy policy">Privacy policy</a>
       <a href="https://instagram.com/osintgram_io" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://addons.mozilla.org/en-US/firefox/addon/adskip-sponsor-ad-skipper/" target="_blank" rel="noopener">Firefox add-on</a>
       <a href="mailto:br19shc39@gmail.com">Email</a>
       <a href="#top">Back to top</a>
     </div>
