@@ -1,0 +1,17 @@
+{
+  "addons": {
+    "adskip@merry8989-uk.github.io": {
+      "updates": [
+        {
+          "version": "1.5.3",
+          "update_link": "https://merry8989-uk.github.io/adskip/xpi/adskip-firefox-1.5.3.xpi",
+          "applications": {
+            "gecko": {
+              "strict_min_version": "140.0"
+            }
+          }
+        }
+      ]
+    }
+  }
+}
